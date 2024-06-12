@@ -22,4 +22,4 @@ COPY . /app/
 EXPOSE 8765
 
 # Run the application
-CMD ["solara", "run", "sol.py"]
+CMD ["solara", "run", "app.py"]
