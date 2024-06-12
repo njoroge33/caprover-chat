@@ -2,5 +2,5 @@
   "schemaVersion": 2,
   "dockerfilePath": "./dockerfile",
   "tartgetProjectFolder": "./",
-  "containerHttpPort": "8501"
+  "containerHttpPort": "8765"
 }
