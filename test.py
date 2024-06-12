@@ -1,0 +1,86 @@
+import solara as sol
+import ollama
+from typing import List, TypedDict
+from docx import Document
+import time
+import threading
+
+class MessageDict(TypedDict):
+    role: str
+    content: str
+
+# Initialize reactive messages list with the first assistant message
+initial_message = [{"role": "assistant", "content": "What do you want to search for on Wikipedia?"}]
+messages: sol.Reactive[List[MessageDict]] = sol.reactive(initial_message)
+
+# Function to add message
+def add_message(role: str, content: str):
+    new_messages = messages.value + [{"role": role, "content": content}]
+    messages.set(new_messages)
+
+# Function to save the last assistant message to a docx file
+def save_last_response_to_docx():
+    doc = Document()
+    # doc.add_heading('Solara LLaMA Chat Last Response', level=1)
+
+    last_message = next((msg for msg in reversed(messages.value) if msg["role"] == "assistant"), None)
+    if last_message:
+        # doc.add_heading('LLaMA:', level=2)
+        doc.add_paragraph(last_message["content"])
+    
+    file_path = "LLaMA_Last_Response.docx"
+    doc.save(file_path)
+    return file_path
+
+# Function to call LLaMA API and get response
+def call_llama():
+    if len(messages.value) == 0 or messages.value[-1]["role"] != "user":
+        return
+    response = ollama.chat(model='llama3:8b', messages=messages.value)
+    assistant_message = response['message']['content']
+    add_message("assistant", "")  # Add empty assistant message first
+    threading.Thread(target=display_typing_effect, args=(assistant_message,)).start()
+
+# Function to display typing effect
+def display_typing_effect(content: str):
+    typing_message = ""
+    for char in content:
+        typing_message += char
+        time.sleep(0.05)  # Adjust typing speed here
+        messages.set(messages.value[:-1] + [{"role": "assistant", "content": typing_message}])
+    save_last_response_to_docx()  # Save only the last assistant's response
+
+@sol.component
+def Page():
+    user_message_count = len([m for m in messages.value if m["role"] == "user"])
+
+    # Function to handle user input
+    def send(message):
+        add_message("user", message)
+        call_llama()
+
+    with sol.Column(
+        style={"width": "80%", "height": "100vh"},
+    ):
+        with sol.lab.ChatBox():
+            for item in messages.value:
+                with sol.lab.ChatMessage(
+                    user=item["role"] == "user",
+                    avatar=False,
+                    name="Assistant" if item["role"] == "assistant" else "User",
+                    color="rgba(0,0,0, 0.06)" if item["role"] == "assistant" else "#ff991f",
+                    avatar_background_color="primary" if item["role"] == "assistant" else None,
+                    border_radius="20px",
+                ):
+                    sol.Markdown(item["content"])
+        sol.lab.ChatInput(send_callback=send, disabled=False)
+        
+        # Add a file download component to download the last response docx file
+        if user_message_count > 0:
+            file_path = save_last_response_to_docx()
+            with open(file_path, "rb") as file:
+                file_content = file.read()
+            sol.FileDownload(file_content, label="Download Last Response", filename="LLaMA_Last_Response.docx")
+
+# Start Solara app
+Page()

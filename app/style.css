@@ -1,0 +1,9 @@
+header{
+    display: none !important;
+    
+}
+
+.btn{
+    padding: 40px !important;
+    margin: 5px !important;
+}
