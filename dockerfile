@@ -1,20 +1,25 @@
-# Use an official Python runtime as a parent image
+# Use the official slim Python image from the Docker Hub
 FROM python:3.10-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Copy the requirements file into the container
+COPY requirements.txt /app/
 
-# Install any needed packages specified in requirements.txt
+# Install any dependencies
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Make port 8501 available to the world outside this container
-EXPOSE 8501
+# Copy the rest of the working directory contents into the container
+COPY . /app/
 
-# Define environment variable
-ENV PYTHONUNBUFFERED=1
+# Expose the port the app runs on
+EXPOSE 8765
 
 # Run the application
-CMD ["python", "app.py"]
+CMD ["solara", "run", "sol.py"]
