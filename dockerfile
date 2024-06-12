@@ -11,7 +11,7 @@ COPY . /app
 RUN pip install -r requirements.txt
 
 # Make port 8501 available to the world outside this container
-EXPOSE 8765
+EXPOSE 8501
 
 # Define environment variable
 ENV PYTHONUNBUFFERED=1
