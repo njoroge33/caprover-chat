@@ -19,7 +19,7 @@ RUN pip install -r requirements.txt
 COPY . /app/
 
 # Expose the port the app runs on
-EXPOSE 8765
+EXPOSE 80
 
 # Run the application
 CMD ["solara", "run", "app.py"]
