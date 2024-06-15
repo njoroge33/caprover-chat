@@ -11,9 +11,15 @@ WORKDIR /app
 # Copy the requirements file into the container
 COPY requirements.txt /app/
 
-# Install any dependencies
+# Install virtualenv
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip install virtualenv
+
+# Create a virtual environment
+RUN virtualenv venv
+
+# Activate the virtual environment and install dependencies
+RUN . venv/bin/activate && pip install -r requirements.txt
 
 # Copy the rest of the working directory contents into the container
 COPY . /app/
