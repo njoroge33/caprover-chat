@@ -79,7 +79,7 @@ def Home():
         with sol.Row(justify="center"):
             with sol.Column():
                 with sol.Link("/chat"):
-                    sol.Button("Search and Create a .docx Wikipedia", outlined=True, classes=["btn"])
+                    sol.Button("Search and Create a .docx Wikipeia", outlined=True, classes=["btn"])
                     sol.Button("Photo organiser", outlined=True, classes=["btn"])
 
 @sol.component
