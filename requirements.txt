@@ -63,8 +63,6 @@ nbformat==5.10.4
 nest-asyncio==1.6.0
 networkx==3.3
 numpy==1.26.4
-ollama==0.2.0
-ollama-python==0.1.2
 orjson==3.10.5
 packaging==24.0
 parso==0.8.4

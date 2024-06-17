@@ -1,5 +1,4 @@
 import solara as sol
-import ollama
 from typing import List, TypedDict
 from docx import Document
 import time
