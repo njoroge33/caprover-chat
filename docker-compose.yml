@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  caprover-docker:
+    build: .
+    ports:
+      - "8765:8765"
+    container_name: caprover-docker
+    environment:
+      - OLLAMA_HOST=ollama
+      - OLLAMA_PORT=11434  # Adjust this if your Ollama service runs on a different port
+    depends_on:
+      - ollama
+    networks:
+      - app-network
+
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"  # Adjust this as needed
+    container_name: ollama
+    networks:
+      - app-network
+
+networks:
+  app-network:
