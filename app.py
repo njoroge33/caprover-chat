@@ -15,7 +15,7 @@ initial_message = [{"role": "assistant", "content": "What do you want to search 
 messages: sol.Reactive[List[MessageDict]] = sol.reactive(initial_message)
 typing_complete: sol.Reactive[bool] = sol.reactive(False)
 
-ollama_client = Ollama(base_url="http://localhost:11434", model="llama3:8b")
+ollama_client = Ollama(base_url="http://ollama.captain.localhost/", model="llama3:8b")
 
 # Function to add message
 def add_message(role: str, content: str):
