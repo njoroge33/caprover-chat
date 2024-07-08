@@ -1,10 +1,10 @@
 import solara as sol
-import ollama
 from typing import List, TypedDict
 from docx import Document
 import time
 import threading
 from pathlib import Path
+from langchain.llms import Ollama
 
 class MessageDict(TypedDict):
     role: str
@@ -14,6 +14,8 @@ class MessageDict(TypedDict):
 initial_message = [{"role": "assistant", "content": "What do you want to search for on Wikipedia?"}]
 messages: sol.Reactive[List[MessageDict]] = sol.reactive(initial_message)
 typing_complete: sol.Reactive[bool] = sol.reactive(False)
+
+ollama_client = Ollama(base_url="http://ollama.captain.localhost/", model="llama3:8b")
 
 # Function to add message
 def add_message(role: str, content: str):
@@ -38,10 +40,19 @@ def save_last_response_to_docx():
 def call_llama():
     if len(messages.value) == 0 or messages.value[-1]["role"] != "user":
         return
-    response = ollama.chat(model='llama3:8b', messages=messages.value)
-    assistant_message = response['message']['content']
-    add_message("assistant", "")  # Add empty assistant message first
-    threading.Thread(target=display_typing_effect, args=(assistant_message,)).start()
+    
+    # Extract the user messages as a single input text
+    user_messages = [msg["content"] for msg in messages.value if msg["role"] == "user"]
+    input_text = "\n".join(user_messages)
+    
+    try:
+        response = ollama_client.invoke(input=input_text)
+        # print(response)
+        assistant_message = response
+        add_message("assistant", "")  # Add empty assistant message first
+        threading.Thread(target=display_typing_effect, args=(assistant_message,)).start()
+    except Exception as e:
+        add_message("assistant", f"Error: {str(e)}")
 
 # Function to display typing effect
 def display_typing_effect(content: str):
@@ -68,7 +79,7 @@ def Home():
         with sol.Row(justify="center"):
             with sol.Column():
                 with sol.Link("/chat"):
-                    sol.Button("Search and Create a .docx Wikipedia", outlined=True, classes=["btn"])
+                    sol.Button("Search and Create a .docx Wikipeia", outlined=True, classes=["btn"])
                     sol.Button("Photo organiser", outlined=True, classes=["btn"])
 
 @sol.component
