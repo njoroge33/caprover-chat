@@ -45,7 +45,6 @@ pure-eval==0.2.2
 Pygments==2.18.0
 pymdown-extensions==10.8.1
 python-dateutil==2.9.0.post0
-pywin32==306
 PyYAML==6.0.1
 pyzmq==26.0.3
 reacton==1.8.3
